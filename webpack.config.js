@@ -11,13 +11,19 @@ let config = {
   },
   devtool: "source-map",
   resolve: {
-    extensions: [".ts", ".tsx", ".js"]
+    extensions: [".js", ".jsx"]
   },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        loader: "awesome-typescript-loader"
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env", "@babel/preset-react"]
+          }
+        }
       },
       {
         test: /\.(png|jpg|gif)$/i,
@@ -35,22 +41,20 @@ let config = {
 };
 
 module.exports = (_, argv) => {
-  if (argv.mode == "development") {
+  if (argv.mode === "development") {
     config.entry = {
-      app: ["./src/dev/index.tsx"]
+      app: ["./src/dev/index.jsx"]
     };
-
     config.plugins = [
       new HtmlWebpackPlugin({
         template: "./src/dev/index.html",
         filename: "./index.html"
       })
     ];
-  } else if (argv.mode == "production") {
+  } else if (argv.mode === "production") {
     config.entry = {
-      app: ["./src/index.tsx"]
+      app: ["./src/index.jsx"]
     };
   }
-
   return config;
 };
